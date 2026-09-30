@@ -1,120 +1,93 @@
 import React from 'react';
-import {
-  Scissors,
-  Film,
-  Sparkles,
-  PlayCircle,
-  Layers,
-  CheckCircle2,
-  Clock,
-  ArrowRight,
-} from 'lucide-react';
-import { usePortfolio } from '../../context/PortfolioContext';
-import { GlassCard } from '../common/GlassCard';
-import { GlassButton } from '../common/GlassButton';
+import { CheckCircle2, Sliders, Volume2, Film, Layers } from 'lucide-react';
+import { Service } from '../../types';
 
-export const ServicesSection: React.FC = () => {
-  const { services } = usePortfolio();
+interface ServicesSectionProps {
+  services: Service[];
+  onBookService: () => void;
+}
 
-  const getIcon = (name: string) => {
-    switch (name) {
-      case 'Scissors':
-        return <Scissors className="w-6 h-6 text-[var(--brand-primary)]" />;
-      case 'Film':
-        return <Film className="w-6 h-6 text-[var(--brand-primary)]" />;
-      case 'Sparkles':
-        return <Sparkles className="w-6 h-6 text-[var(--brand-primary)]" />;
-      case 'PlayCircle':
-        return <PlayCircle className="w-6 h-6 text-[var(--brand-primary)]" />;
-      default:
-        return <Layers className="w-6 h-6 text-[var(--brand-primary)]" />;
-    }
-  };
-
-  const scrollToContact = () => {
-    const el = document.getElementById('contact-section');
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
-  };
-
+export const ServicesSection: React.FC<ServicesSectionProps> = ({ services, onBookService }) => {
   return (
-    <section id="services-section" className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-[var(--brand-border)]">
-      <header className="text-center max-w-2xl mx-auto mb-12">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glass-surface text-xs font-bold text-[var(--brand-primary)] uppercase tracking-wider mb-3">
-          Capabilities & Packages
+    <section id="services" aria-labelledby="services-heading" className="py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-white/10">
+      {/* Header */}
+      <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-12">
+        <div>
+          <div className="flex items-center gap-2 font-mono text-xs text-[#ff3b00] tracking-widest uppercase mb-2">
+            <Sliders className="w-3.5 h-3.5" aria-hidden="true" />
+            <span>OPERATIONAL CAPABILITIES // SERVICES</span>
+          </div>
+          <h2 id="services-heading" className="font-heading font-extrabold text-3xl sm:text-4xl text-white tracking-tight">
+            SERVICE DIRECTORY &amp; PIPELINE
+          </h2>
         </div>
-        <h2 className="text-3xl sm:text-5xl font-extrabold font-heading text-[var(--brand-text)] tracking-tight">
-          SERVICES & SUITE
-        </h2>
-        <p className="text-sm sm:text-base text-[var(--brand-text-secondary)] mt-3">
-          End-to-end post-production solutions crafted for commercial brands, recording artists, and ambitious creators.
+
+        <p className="font-mono text-xs text-white/50">
+          ALL SERVICES CONFORM TO DCI / ITU-R BT.709 &amp; 2020 STANDARDS
         </p>
       </header>
 
+      {/* Services Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {services.map(service => (
-          <article
-            key={service.id}
-            className="glass-card hover-glow rounded-2xl p-6 sm:p-8 flex flex-col justify-between gap-6 transition-all duration-300"
-          >
-            <div>
-              <header className="flex items-start justify-between gap-4 mb-4">
-                <div className="p-3 rounded-xl bg-[var(--brand-surface-elevated)] border border-[var(--brand-border)]">
-                  {getIcon(service.icon)}
+        {services.map((service, idx) => {
+          const serviceNum = String(idx + 1).padStart(2, '0');
+          return (
+            <article
+              key={service.id}
+              id={`service-card-${service.id}`}
+              className="bg-[#121214] border border-white/10 hover:border-[#ff3b00]/60 p-6 rounded-lg transition-all flex flex-col justify-between group"
+            >
+              <div>
+                <header className="flex items-center justify-between font-mono text-xs text-white/40 pb-3 border-b border-white/10 mb-4">
+                  <span className="text-[#00e5ff] font-bold">SERVICE_{serviceNum}</span>
+                  <span className="px-2 py-0.5 rounded bg-white/5 text-white/50 border border-white/10 text-[10px]">
+                    OFFERED DIRECT
+                  </span>
+                </header>
+
+                <h3 className="font-heading font-bold text-xl text-white group-hover:text-[#ff3b00] transition-colors mb-2">
+                  {service.title}
+                </h3>
+
+                <p className="font-body text-sm text-white/70 leading-relaxed mb-6">
+                  {service.description}
+                </p>
+
+                {/* Deliverables List */}
+                <div className="space-y-2 mb-6">
+                  <div className="font-mono text-[11px] text-white/40 tracking-wider uppercase">
+                    STANDARD DELIVERABLES:
+                  </div>
+                  <ul role="list" aria-label={`Deliverables for ${service.title}`} className="space-y-1.5 list-none p-0 m-0">
+                    {service.deliverables.map((deliv, dIdx) => (
+                      <li key={dIdx} className="flex items-center gap-2 font-mono text-xs text-white/80">
+                        <span className="text-[#ff3b00] text-xs" aria-hidden="true">►</span>
+                        <span>{deliv}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              {/* Pricing & CTA Footer */}
+              <footer className="pt-4 border-t border-white/10 flex items-center justify-between font-mono text-xs">
+                <div>
+                  <span className="text-white/40 text-[10px] block">RATE STRUCTURE:</span>
+                  <span className="text-white font-semibold">{service.pricing || 'Inquire for scope'}</span>
                 </div>
 
-                {service.showPrice && service.startingPrice && (
-                  <div className="text-right">
-                    <span className="text-[10px] uppercase tracking-wider font-semibold text-[var(--brand-text-muted)] block">
-                      Starting from
-                    </span>
-                    <span className="text-lg font-bold font-heading text-[var(--brand-primary)]">
-                      {service.startingPrice}
-                    </span>
-                  </div>
-                )}
-              </header>
-
-              <h3 className="text-xl font-bold font-heading text-[var(--brand-text)] mb-2">
-                {service.title}
-              </h3>
-              <p className="text-sm text-[var(--brand-text-secondary)] leading-relaxed mb-6">
-                {service.description}
-              </p>
-
-              {/* Deliverables Checklist */}
-              <div className="space-y-2 pt-4 border-t border-[var(--brand-border)]">
-                <span className="text-xs font-bold uppercase tracking-wider text-[var(--brand-text-muted)] block">
-                  What's Included:
-                </span>
-                <ul className="space-y-2 list-none p-0 m-0">
-                  {service.deliverables.map((item, idx) => (
-                    <li key={idx} className="flex items-start gap-2 text-xs text-[var(--brand-text)]">
-                      <CheckCircle2 className="w-4 h-4 text-[var(--brand-primary)] shrink-0 mt-0.5" />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-
-            {/* Turnaround & CTA */}
-            <footer className="pt-4 border-t border-[var(--brand-border)] flex items-center justify-between">
-              <div className="flex items-center gap-1.5 text-xs text-[var(--brand-text-muted)]">
-                <Clock className="w-3.5 h-3.5" />
-                <span>Turnaround: {service.turnaround}</span>
-              </div>
-
-              <button
-                type="button"
-                onClick={scrollToContact}
-                className="text-xs font-semibold text-[var(--brand-primary)] hover:underline flex items-center gap-1 cursor-pointer"
-              >
-                <span>Book Service</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
-            </footer>
-          </article>
-        ))}
+                <button
+                  id={`request-service-${service.id}`}
+                  type="button"
+                  onClick={onBookService}
+                  className="px-3.5 py-1.5 rounded bg-white/5 hover:bg-[#ff3b00] text-white/80 hover:text-white border border-white/15 hover:border-[#ff3b00] transition-all cursor-pointer"
+                >
+                  REQUEST THIS SERVICE →
+                </button>
+              </footer>
+            </article>
+          );
+        })}
       </div>
     </section>
   );

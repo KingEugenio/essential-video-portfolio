@@ -1,747 +1,449 @@
-export type VideoProvider = 'direct' | 'googledrive' | 'youtube' | 'vimeo' | 'mux' | 'cloudflare_stream';
 export type VideoOrientation = 'landscape' | 'portrait' | 'square' | 'custom';
-export type VideoAspectRatio = '16:9' | '9:16' | '1:1' | '4:5' | '4:3' | '2.39:1' | 'custom';
-export type ProjectStatus = 'draft' | 'published' | 'scheduled' | 'archived';
-export type ProjectVisibility = 'public' | 'private';
+export type AspectRatioType = '16:9' | '9:16' | '1:1' | '2.35:1' | '4:3' | '4:5';
 
-export interface VideoSource {
-  provider: VideoProvider;
-  url: string;
-  driveFileId?: string;
-  embedId?: string;
-  aspectRatio?: VideoAspectRatio;
-  orientation?: VideoOrientation;
-  duration?: string;
-  posterUrl?: string;
-  quality?: string;
-  width?: number;
-  height?: number;
-}
+export type MediaProviderType = 
+  | 'direct' 
+  | 'direct_upload' 
+  | 'google_drive' 
+  | 'drive' 
+  | 'youtube' 
+  | 'vimeo' 
+  | 'mux' 
+  | 'cloudflare_stream' 
+  | 's3' 
+  | 'storage' 
+  | 'custom';
 
-export interface ProjectDeliverable {
+export type MediaHealthStatus = 
+  | 'healthy' 
+  | 'processing' 
+  | 'warning' 
+  | 'broken' 
+  | 'missing' 
+  | 'provider_disconnected';
+
+export interface MediaAsset {
   id: string;
   name: string;
-  type: 'master_4k' | 'vertical_reel' | 'broadcast_cut' | 'social_teaser' | 'bts' | 'color_pass';
-  mediaAssetId?: string;
-  source: VideoSource;
-  aspectRatio?: VideoAspectRatio;
+  title?: string;
+  filename?: string;
+  url?: string;
+  sourceUrl?: string;
+  playbackUrl: string;
+  fallbackPlaybackUrl?: string;
+  thumbnailUrl?: string;
+  type: 'image' | 'video' | 'logo' | 'thumbnail' | 'audio';
+  provider: MediaProviderType;
+  providerAssetId?: string;
+  mimeType?: string;
+  size?: string;
+  fileSizeBytes?: number;
   duration?: string;
-  isPrimary?: boolean;
+  durationSeconds?: number;
+  width?: number;
+  height?: number;
+  aspectRatio?: AspectRatioType;
+  orientation?: VideoOrientation;
+  status: MediaHealthStatus;
+  visibility: 'public' | 'private';
+  metadata?: Record<string, any>;
+  usedInProjects?: string[];
+  errorMessage?: string;
+  lastHealthCheck?: string;
+  createdAt: string;
+  updatedAt?: string;
 }
 
-export interface ProjectVideo {
+export interface VideoItem {
   id: string;
   title: string;
   description?: string;
-  source: VideoSource;
-  type: 'main' | 'supporting' | 'bts' | 'vertical_cut' | 'before_after';
-  isFeatured?: boolean;
-  orientation?: VideoOrientation;
-  aspectRatio?: VideoAspectRatio;
+  provider: MediaProviderType;
+  providerIdOrUrl: string;
+  orientation: VideoOrientation;
+  aspectRatio: AspectRatioType;
+  width?: number;
+  height?: number;
   duration?: string;
-  order: number;
+  autoplay?: boolean;
+  driveFileId?: string;
+  thumbnailUrl?: string;
+  mediaAssetId?: string;
+  status?: MediaHealthStatus;
+  fallbackUrl?: string;
 }
 
-export interface BeforeAfterData {
-  hasBeforeAfter: boolean;
-  labelBefore: string; // e.g. "LOG RAW / Before Grade"
-  labelAfter: string;  // e.g. "Film Emulation / Final Grade"
-  beforeUrl: string;
-  afterUrl: string;
-  beforeType?: 'video' | 'image';
-  afterType?: 'video' | 'image';
+export type ProjectStatus = 'published' | 'draft' | 'scheduled' | 'archived';
+export type ProjectVisibility = 'public' | 'private' | 'unlisted';
+export type RetroEffectType = 'off' | 'vhs' | 'crt' | 'film' | 'glitch' | 'custom';
+
+export interface BeforeAfterFootage {
+  beforeVideo?: VideoItem;
+  afterVideo?: VideoItem;
+  beforeLabel?: string;
+  afterLabel?: string;
+  beforeImage?: string;
+  afterImage?: string;
+}
+
+export interface ProjectCredit {
+  role: string;
+  name: string;
+  link?: string;
+}
+
+export interface ProjectVersion {
+  id: string;
+  versionNumber: string;
+  name: string;
+  mediaAssetId: string;
+  videoUrl: string;
+  createdAt: string;
+  isPublished: boolean;
   notes?: string;
 }
 
-export interface GalleryItem {
+export interface AspectRatioVersion {
   id: string;
-  url: string;
-  caption?: string;
-  type?: 'image' | 'video';
+  ratio: AspectRatioType;
+  label: string;
+  videoUrl: string;
+  thumbnailUrl?: string;
+  provider?: MediaProviderType;
 }
 
 export interface Project {
   id: string;
   title: string;
   slug: string;
-  category: string;
+  description: string;
+  brief?: string;
+  approach?: string;
+  
+  // Extended Case Study Fields
+  challenge?: string;
+  creativeDirection?: string;
+  editingProcess?: string;
+  colorGradingNotes?: string;
+  motionVfxNotes?: string;
+  soundDesignNotes?: string;
+  stills?: string[];
+  btsMedia?: VideoItem[];
+  aspectRatioVersions?: AspectRatioVersion[];
+
+  role: string;
+  software: string[];
   client: string;
   year: string;
+  category: string;
+  services: string[];
+  tags: string[];
+  thumbnail: string;
+  mainVideo: VideoItem;
+  additionalVideos: VideoItem[];
+  beforeAfter?: BeforeAfterFootage;
   featured: boolean;
-  published: boolean;
-  status?: ProjectStatus;
+  status: ProjectStatus;
   visibility?: ProjectVisibility;
   order: number;
-  description: string;
-  brief: string;
-  approach: string;
-  role: string[];
-  software: string[];
-  services: string[];
-  thumbnailUrl: string;
-  videoSource: VideoSource;
-  deliverables?: ProjectDeliverable[];
-  videos?: ProjectVideo[];
-  orientation?: VideoOrientation;
-  beforeAfterData?: BeforeAfterData;
-  gallery?: GalleryItem[];
-  viewsCount: number;
+  views: number;
+  credits?: ProjectCredit[];
+  versions?: ProjectVersion[];
   seoTitle?: string;
   seoDescription?: string;
-  socialPreviewUrl?: string;
-  tags?: string[];
-  sourceType?: 'local' | 'googledrive' | 'wordpress' | 'youtube' | 'vimeo' | 'mux';
-  wordpressPostId?: number;
-  scheduledAt?: string;
-  archivedAt?: string;
-  createdAt?: string;
-  updatedAt?: string;
-}
-
-export interface FormFieldConfig {
-  id: string;
-  name: string;
-  label: string;
-  placeholder?: string;
-  type: 'text' | 'email' | 'tel' | 'textarea' | 'select';
-  required: boolean;
-  enabled: boolean;
-  options?: string[];
-  order: number;
-}
-
-export type BookingFormField = FormFieldConfig;
-
-export interface BookingFormSettings {
-  provider: 'formspree' | 'custom' | 'webhook';
-  formspreeEndpoint: string;
-  webhookUrl?: string;
-  heading: string;
-  subheading: string;
-  buttonText: string;
-  successMessage: string;
-  errorMessage?: string;
-  whatsappEnabled: boolean;
-  whatsappNumber: string;
-  whatsappMessageTemplate?: string;
-  fields: FormFieldConfig[];
-}
-
-export interface WordPressConfig {
-  enabled: boolean;
-  endpointUrl: string; // e.g. https://my-wp-site.com/wp-json/wp/v2/portfolio_project
-  customPostType: string;
-  apiKey?: string;
-  lastSyncedAt?: string;
-  autoSync: boolean;
-  syncStatus: 'idle' | 'syncing' | 'success' | 'error';
-  errorMessage?: string;
-}
-
-export interface SetupWizardState {
-  isCompleted: boolean;
-  currentStep: number;
-  lastDismissedAt?: string;
-}
-
-export type PortfolioLayoutMode = 'grid' | 'masonry' | 'cinematic' | 'social' | 'mixed';
-
-export interface ProofingComment {
-  id: string;
-  timestamp: number; // in seconds
-  formattedTime: string; // e.g. "01:24"
-  author: string;
-  role: 'client' | 'editor';
-  text: string;
-  status: 'open' | 'resolved';
+  socialPreviewImage?: string;
+  scheduledPublishDate?: string;
   createdAt: string;
+  updatedAt: string;
+  retroEffect?: RetroEffectType;
+  retroEffectIntensity?: 'low' | 'medium' | 'high';
 }
 
-export interface ClientProofingReview {
-  id: string;
-  projectId?: string;
-  projectTitle: string;
-  clientName: string;
-  clientEmail?: string;
-  passcode?: string;
-  status: 'in_review' | 'changes_requested' | 'approved' | 'final_delivered';
-  version?: string;
-  versionName?: string;
-  videoSource: VideoSource;
-  comments: ProofingComment[];
-  createdAt: string;
-  lastUpdated: string;
-}
-
-export interface MediaItem {
-  id: string;
-  title: string;
-  filename?: string;
-  type: 'video' | 'image' | 'audio' | 'document';
-  source: 'local' | 'direct' | 'googledrive' | 'cloud' | 'youtube' | 'vimeo' | 'mux';
-  provider?: VideoProvider | 'mux' | 'cloudflare_stream';
-  providerAssetId?: string;
-  url: string;
-  sourceUrl?: string;
-  playbackUrl?: string;
-  thumbnailUrl: string;
-  size: string;
-  fileSize?: string;
-  mimeType?: string;
-  dimensions?: string;
-  width?: number;
-  height?: number;
-  aspectRatio?: VideoAspectRatio;
-  duration?: string;
-  category?: string;
-  driveFileId?: string;
-  uploadedAt: string;
-  createdAt?: string;
-  updatedAt?: string;
-  status?: 'ready' | 'processing' | 'uploading' | 'failed' | 'disconnected';
-  healthStatus?: 'healthy' | 'warning' | 'broken' | 'unverified';
-  visibility?: 'public' | 'private';
-  usedInProjectIds?: string[];
-  metadata?: Record<string, any>;
-}
-
-export type MediaAsset = MediaItem;
-
-export interface GoogleDriveFile {
-  id: string;
-  name: string;
-  mimeType: string;
-  size: string;
-  modifiedTime: string;
-  thumbnailLink?: string;
-  webContentLink?: string;
-  webViewLink?: string;
-  embedUrl?: string;
-  isVideo?: boolean;
-  duration?: string;
-  resolution?: string;
-  folderId?: string;
-  parentName?: string;
-}
-
-export interface GoogleDriveFolder {
-  id: string;
-  name: string;
-  parentId?: string;
-  filesCount?: number;
-  itemCount?: number;
-}
-
-export interface ServiceItem {
+export interface Service {
   id: string;
   title: string;
   description: string;
+  category: string;
   deliverables: string[];
-  turnaround: string;
-  startingPrice?: string;
-  showPrice?: boolean;
-  icon: string;
-  featured?: boolean;
-  order?: number;
+  pricing?: string;
+  available: boolean;
+  order: number;
 }
 
-export interface PricingPackage {
+export interface PricingTier {
   id: string;
   name: string;
-  slug?: string;
+  badge?: string;
   price: string;
-  currency: string; // e.g. "USD", "GHS", "NGN", "GBP", "EUR"
-  billingPeriod?: 'project' | 'per-video' | 'per-month' | 'one-time';
+  currency: string;
+  billingPeriod?: 'one-off' | 'monthly' | 'per-minute' | 'project' | 'custom';
   description: string;
   features: string[];
-  deliverables?: string[];
-  turnaround: string;
-  revisions: string;
-  featured: boolean;
+  notIncluded?: string[];
   ctaText: string;
-  badge?: string;
+  featured: boolean;
+  available: boolean;
   order: number;
 }
 
-export interface TestimonialItem {
+export interface PricingConfig {
+  enabled: boolean;
+  headline: string;
+  subheadline: string;
+  activeCurrency: string;
+  supportedCurrencies: string[];
+  allowCustomQuote: boolean;
+  quoteCtaText: string;
+  packages: PricingTier[];
+}
+
+export interface Testimonial {
   id: string;
   clientName: string;
   company: string;
   role: string;
-  avatarUrl: string;
-  content?: string;
-  quote?: string;
-  projectTitle?: string;
-  rating: number;
-  published?: boolean;
-  order?: number;
+  avatarUrl?: string;
+  content: string;
+  projectName?: string;
+  rating?: number;
+  published: boolean;
+  order: number;
 }
 
-export interface EnquiryItem {
+export type SocialPlatform = 
+  | 'instagram' 
+  | 'tiktok' 
+  | 'youtube' 
+  | 'vimeo' 
+  | 'linkedin' 
+  | 'x' 
+  | 'facebook' 
+  | 'behance' 
+  | 'dribbble' 
+  | 'whatsapp' 
+  | 'website' 
+  | 'other';
+
+export interface SocialLink {
   id: string;
-  name?: string;
-  clientName?: string;
-  email?: string;
-  clientEmail?: string;
+  platform: SocialPlatform;
+  url: string;
+  label: string;
+  enabled: boolean;
+}
+
+export interface ContactFormConfig {
+  provider: 'formspree' | 'custom' | 'custom_endpoint';
+  endpointUrl: string;
+  heading: string;
+  subheading: string;
+  buttonText: string;
+  successMessage: string;
+  whatsappNumber: string;
+  showWhatsapp: boolean;
+  fields: {
+    name: boolean;
+    email: boolean;
+    phone: boolean;
+    company: boolean;
+    projectType: boolean;
+    budget: boolean;
+    deadline: boolean;
+    hasFootage: boolean;
+    footageStorage: boolean;
+    deliverables: boolean;
+    message: boolean;
+  };
+}
+
+export interface Inquiry {
+  id: string;
+  name: string;
+  email: string;
   phone?: string;
-  clientPhone?: string;
   company?: string;
   projectType?: string;
   budget?: string;
-  budgetRange?: string;
   deadline?: string;
-  hasFootage?: 'yes' | 'no' | 'in_production';
-  footageStatus?: string;
-  footageLocation?: string;
-  footageLink?: string;
-  description?: string;
-  message?: string;
-  status: 'new' | 'in_discussion' | 'quoted' | 'booked' | 'archived';
-  receivedAt: string;
-  notes?: string;
+  hasFootage?: string;
+  footageStorage?: string;
+  deliverables?: string;
+  message: string;
+  status: 'new' | 'in_review' | 'contacted' | 'archived';
+  createdAt: string;
 }
 
-export interface CategoryItem {
-  id: string;
-  name: string;
-  slug: string;
-  count?: number;
-}
+export type GrainMode = 'clean' | 'film' | '16mm' | 'vhs' | 'crt' | 'custom';
+export type WindowStyle = 'retro-win95' | 'y2k-silver' | 'crt-terminal' | 'vhs-player' | 'minimal-retro';
+export type PortfolioLayout = 'grid' | 'masonry' | 'cinematic' | 'social' | 'contact-sheet' | 'collage';
+export type HeroLayout = 'cinematic' | 'split' | 'fullscreen' | 'minimal' | 'desktop';
+export type TemplatePreset = 
+  | 'retro-archive' 
+  | 'neo-brutalist' 
+  | 'dark-aurora' 
+  | 'retro-surrealist' 
+  | 'minimal-cinema' 
+  | 'y2k-studio' 
+  | 'film-lab' 
+  | 'clean-modern';
 
-export interface SoftwareTool {
-  name: string;
-  category: 'NLE' | 'Color' | 'VFX' | 'Audio' | '3D' | 'Design';
-  level: 'Expert' | 'Advanced' | 'Proficient';
-  icon: string;
+export interface AttributionConfig {
+  enabled: boolean;
+  text: string;
+  url: string;
 }
 
 export interface BrandSettings {
   brandName: string;
   professionalTitle: string;
-  tagline: string;
-  logoText: string;
-  logoUrl?: string;
-  faviconUrl?: string;
-  profileImageUrl: string;
-  heroVideoUrl?: string;
   bio: string;
-  story: string;
+  avatarUrl: string;
+  logoUrl: string;
+  logoMonogram?: string;
+  faviconUrl: string;
   location: string;
-  yearsOfExperience: number;
-  projectsCompleted: number;
-  satisfiedClients: number;
-  awardsWon: number;
-  showStats: boolean;
-  email?: string;
-  contactEmail?: string;
-  phone?: string;
-  contactPhone?: string;
-  whatsapp?: string;
-  availableForHire: boolean;
-  availabilityStatus: string;
-  showreelTitle: string;
-  showreelSource: VideoSource;
-  showreelVideoUrl?: string;
-  showreelPosterUrl?: string;
-  socials?: {
-    instagram?: string;
-    youtube?: string;
-    vimeo?: string;
-    tiktok?: string;
-    linkedin?: string;
-    x?: string;
-    behance?: string;
-    dribbble?: string;
-    website?: string;
-    whatsapp?: string;
-  };
-  socialLinks?: {
-    instagram?: string;
-    youtube?: string;
-    vimeo?: string;
-    tiktok?: string;
-    linkedin?: string;
-    x?: string;
-    behance?: string;
-    dribbble?: string;
-    website?: string;
-    whatsapp?: string;
-  };
-  softwareTools?: SoftwareTool[];
-  softwareStack?: SoftwareTool[];
-}
-
-export interface ColorTokens {
-  primary: string;
-  secondary: string;
-  accent: string;
-  background: string;
-  surface: string;
-  surfaceElevated: string;
-  textPrimary: string;
-  textSecondary: string;
-  textMuted: string;
-  border: string;
-  button: string;
-  buttonText: string;
-  success: string;
-  warning: string;
-  error: string;
-}
-
-export interface GlassTokens {
-  blur: number; // e.g. 16
-  opacity: number; // e.g. 0.75
-  borderOpacity: number; // e.g. 0.15
-  surfaceIntensity: number; // e.g. 1
-}
-
-export interface TypographyTokens {
+  yearsExperience: string;
+  heroHeadline: string;
+  heroSubheadline: string;
+  heroCtaPrimary?: string;
+  heroCtaSecondary?: string;
+  aboutManifestoHeadline?: string;
+  archiveHeading?: string;
+  archiveSubheading?: string;
+  heroLayout: HeroLayout;
+  showreelVideo: VideoItem;
+  
+  // Theme Color Tokens
+  primaryColor: string;
+  secondaryColor: string;
+  accentColor: string;
+  backgroundColor: string;
+  surfaceColor: string;
+  surfaceElevatedColor: string;
+  textColor: string;
+  mutedTextColor: string;
+  borderColor: string;
+  crtGlowColor: string;
+  filmTint: string;
+  
+  // Typography Tokens
   headingFont: string;
   bodyFont: string;
-  navFont: string;
-  buttonFont: string;
-  headingWeight: '300' | '400' | '500' | '600' | '700' | '800' | '900';
-  bodyWeight: '300' | '400' | '500' | '600';
-  headingScale: number; // 0.9 to 1.4
-  bodyScale: number; // 0.9 to 1.2
-  letterSpacing: 'tighter' | 'tight' | 'normal' | 'wide' | 'wider';
+  monoFont: string;
+  
+  // Retro & UI Styling
+  borderRadius: string;
+  glassIntensity: number;
+  grainMode: GrainMode;
+  grainIntensity: number;
+  scanlinesEnabled: boolean;
+  vhsNoiseEnabled: boolean;
+  chromaticAberrationEnabled: boolean;
+  glitchEnabled: boolean;
+  crtGlowEnabled: boolean;
+  timestampEnabled: boolean;
+  recIndicatorEnabled: boolean;
+  windowStyle: WindowStyle;
+  portfolioLayout: PortfolioLayout;
+  templatePreset: TemplatePreset;
+  autoNumbering: boolean;
+  attribution?: AttributionConfig;
 }
 
-export type HeroLayoutType = 'type-video' | 'fullscreen-showreel' | 'split-profile' | 'minimal-editorial';
-export type PortfolioCardStyle = 'grid' | 'masonry' | 'large-feature' | 'editorial' | 'minimal';
-export type NavStyle = 'floating-glass' | 'solid-top' | 'minimal-split';
-
-export interface LayoutTokens {
-  heroLayout: HeroLayoutType;
-  portfolioCardStyle: PortfolioCardStyle;
-  navStyle: NavStyle;
-  cardRadius: number; // e.g. 12 or 16
-  buttonRadius: number; // e.g. 8 or 9999
-  borderThickness: number; // e.g. 2 for neo-brutalist 2px border
-  shadowIntensity: 'none' | 'subtle' | 'hard' | 'brutalist';
-  enableGradients: boolean;
-  enableGrain: boolean;
-  visibleSections: {
-    hero: boolean;
-    showreel: boolean;
-    featured: boolean;
-    showcase?: boolean;
-    portfolio: boolean;
-    beforeAfter: boolean;
-    services: boolean;
-    pricing?: boolean;
-    about: boolean;
-    software: boolean;
-    testimonials: boolean;
-    enquiry: boolean;
+export interface GoogleDriveFile {
+  id: string;
+  name: string;
+  mimeType: string;
+  thumbnailLink?: string;
+  webViewLink: string;
+  webContentLink?: string;
+  size?: string;
+  durationMillis?: string;
+  videoMediaMetadata?: {
+    width: number;
+    height: number;
+    durationMillis: string;
   };
-  sectionOrder: string[];
 }
 
-export type PresetId =
-  | 'electric-lime'
-  | 'electric-violet'
-  | 'cyber-blue'
-  | 'hot-magenta'
-  | 'solar-orange'
-  | 'cinematic-gold'
-  | 'monochrome'
-  | 'cinematic'
-  | 'minimal'
-  | 'luxury'
-  | 'modern-creative'
-  | 'tech-creative'
-  | 'custom';
-
-export interface ThemeSettings {
-  presetId: PresetId;
-  mode: 'dark' | 'light' | 'system';
-  colors: ColorTokens;
-  glass: GlassTokens;
-  typography: TypographyTokens;
-  layout: LayoutTokens;
+export interface GoogleDriveConnectionConfig {
+  connected: boolean;
+  userEmail?: string;
+  allowedFolderIds?: string[];
+  selectedFolderName?: string;
+  connectedAt?: string;
 }
 
-export interface AnalyticsSummary {
-  totalPortfolioViews: number;
-  projectViews: number;
-  showreelPlays: number;
-  enquiriesReceived: number;
-  proofingsActive: number;
-  topProjects: Array<{ title: string; views: number; slug: string }>;
-  weeklyViews: Array<{ day: string; views: number }>;
+export interface StreamingProviderConfig {
+  preferredProvider: 'direct' | 'google_drive' | 'mux' | 'cloudflare_stream' | 's3';
+  muxConfig?: {
+    tokenId?: string;
+    tokenSecretSet: boolean;
+  };
+  cloudflareConfig?: {
+    accountId?: string;
+    apiTokenSet: boolean;
+  };
+  s3Config?: {
+    bucketName?: string;
+    region?: string;
+    cdnUrl?: string;
+  };
 }
 
-// --------------------------------------------------------------------------
-// Multi-Tenant, User & Authentication Types
-// --------------------------------------------------------------------------
-
-export type UserRole = 'PORTFOLIO_OWNER' | 'TEAM_MEMBER' | 'EDITOR' | 'CLIENT' | 'PLATFORM_ADMIN';
-
-export interface User {
-  id: string;
-  email: string;
-  name: string;
-  role: UserRole;
-  avatarUrl?: string;
-  portfolioId: string;
-  createdAt: string;
+export interface WordPressConfig {
+  enabled: boolean;
+  restApiUrl: string;
+  customPostType: string;
+  autoSync: boolean;
+  lastSyncedAt?: string;
 }
 
-export interface PortfolioTenant {
-  id: string;
-  ownerId: string;
-  name: string;
-  slug: string;
-  customDomain?: string;
-  plan: 'free' | 'creator' | 'pro' | 'studio' | 'enterprise';
-  createdAt: string;
-  updatedAt: string;
+export interface PortfolioData {
+  brand: BrandSettings;
+  projects: Project[];
+  services: Service[];
+  pricing: PricingConfig;
+  testimonials: Testimonial[];
+  socialLinks: SocialLink[];
+  contactConfig: ContactFormConfig;
+  wordpressConfig: WordPressConfig;
 }
 
-export interface AuthSession {
-  user: User;
-  token: string;
-  expiresAt: string;
-}
-
-// --------------------------------------------------------------------------
-// Invoicing, Billing & Payment Types
-// --------------------------------------------------------------------------
-
-export type PaymentStatus = 'draft' | 'sent' | 'partially_paid' | 'paid' | 'overdue' | 'cancelled';
-export type PaymentProviderType = 'stripe' | 'paypal' | 'lemonsqueezy' | 'bank_transfer' | 'crypto';
-export type SupportedCurrency = 'USD' | 'GHS' | 'NGN' | 'GBP' | 'EUR' | 'CAD';
-
-export interface InvoiceLineItem {
-  id: string;
-  description: string;
-  quantity: number;
-  unitPrice: number;
-  amount: number;
-}
-
-export interface Invoice {
-  id: string;
-  portfolioId: string;
-  invoiceNumber: string;
-  clientName: string;
-  clientEmail: string;
-  clientCompany?: string;
-  clientAddress?: string;
-  items: InvoiceLineItem[];
-  subtotal: number;
-  taxRate: number; // percentage, e.g. 10
-  taxAmount: number;
-  depositAmount: number;
-  total: number;
-  balanceDue: number;
-  currency: SupportedCurrency;
-  status: PaymentStatus;
-  dueDate: string;
-  notes?: string;
-  paymentLink?: string;
-  paymentProvider?: PaymentProviderType;
-  paidAt?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-// --------------------------------------------------------------------------
-// Contract System
-// --------------------------------------------------------------------------
-
-export type ContractStatus = 'draft' | 'sent' | 'signed' | 'declined' | 'expired';
-
-export interface Contract {
-  id: string;
-  portfolioId: string;
-  title: string;
-  clientName: string;
-  clientEmail: string;
-  clientCompany?: string;
-  scopeOfWork: string;
-  deliverablesSummary: string;
-  totalFee: number;
-  currency: SupportedCurrency;
-  paymentTerms: string;
-  killFeePercentage?: number;
-  revisionsAllowed: number;
-  termsAndConditions: string;
-  status: ContractStatus;
-  sentAt?: string;
-  signedAt?: string;
-  signerIp?: string;
-  signatureData?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-// --------------------------------------------------------------------------
-// Centralized Notifications
-// --------------------------------------------------------------------------
-
-export type NotificationType = 'enquiry' | 'payment' | 'proofing' | 'integration' | 'system';
-
-export interface NotificationItem {
-  id: string;
-  portfolioId: string;
-  type: NotificationType;
-  title: string;
-  message: string;
-  read: boolean;
-  link?: string;
-  createdAt: string;
-}
-
-// --------------------------------------------------------------------------
-// AI Service Types
-// --------------------------------------------------------------------------
-
-export interface AIDescriptionDraft {
-  title: string;
-  category: string;
-  description: string;
-  brief: string;
-  approach: string;
-  tags: string[];
-  role: string[];
-  software: string[];
-}
-
-export interface AISEODraft {
-  seoTitle: string;
-  seoDescription: string;
-  keywords: string[];
-  socialDescription: string;
-}
-
-export interface AIBriefSummary {
-  projectType: string;
-  clientObjective: string;
-  deliverables: string[];
-  targetTimeline: string;
-  budgetEstimated: string;
-  keyChallenges: string[];
-  suggestedQuestions: string[];
-}
-
-export interface AICaseStudyDraft {
-  challenge: string;
-  creativeDirection: string;
-  editingTechnique: string;
-  colorGradingPass: string;
-  motionVfxWork: string;
-  outcomeAndImpact: string;
-}
-
-// --------------------------------------------------------------------------
-// Video Engagement & Privacy Analytics
-// --------------------------------------------------------------------------
-
-export type VideoAnalyticsEventType =
-  | 'video_loaded'
-  | 'video_started'
-  | 'video_25_percent'
-  | 'video_50_percent'
-  | 'video_75_percent'
-  | 'video_completed'
-  | 'video_seek'
-  | 'video_paused'
-  | 'video_fullscreen';
-
-export interface VideoEngagementRecord {
-  id: string;
-  projectId: string;
-  projectTitle: string;
-  eventType: VideoAnalyticsEventType;
-  currentTime: number;
-  duration: number;
-  deviceCategory: 'desktop' | 'mobile' | 'tablet';
-  trafficSource: string;
-  timestamp: string;
-}
-
-export interface DetailedAnalyticsReport {
-  summary: AnalyticsSummary;
-  totalPlays: number;
-  totalCompletions: number;
-  averageEngagementRate: number;
-  dropOffPoints: Array<{ quartile: string; percentage: number }>;
-  topPerformingVideos: Array<{
-    projectId: string;
-    title: string;
-    views: number;
-    plays: number;
-    completionRate: number;
+export interface AdminAnalytics {
+  totalViews: number;
+  videoPlays: number;
+  videoCompletions: number;
+  projectViews: Record<string, number>;
+  inquiriesCount: number;
+  ctaClicks: number;
+  deviceBreakdown: {
+    desktop: number;
+    mobile: number;
+    tablet: number;
+  };
+  browserBreakdown: {
+    chrome: number;
+    safari: number;
+    firefox: number;
+    edge: number;
+    brave: number;
+    other: number;
+  };
+  recentEvents: Array<{
+    id: string;
+    type: string;
+    projectId?: string;
+    projectTitle?: string;
+    timestamp: string;
+    device: string;
   }>;
-  trafficSources: Array<{ source: string; percentage: number }>;
-  deviceBreakdown: Array<{ device: string; count: number }>;
 }
 
-// --------------------------------------------------------------------------
-// Integration Hub
-// --------------------------------------------------------------------------
-
-export type IntegrationId = 'googledrive' | 'stripe' | 'resend' | 'gemini' | 'wordpress' | 'cloudflare_stream' | 'mux';
-
-export interface IntegrationStatus {
-  id: IntegrationId;
-  name: string;
-  description: string;
-  category: 'Storage' | 'Payment' | 'Email' | 'AI' | 'CMS' | 'Streaming';
-  isConnected: boolean;
-  status: 'connected' | 'disconnected' | 'error' | 'pending';
-  accountEmail?: string;
-  lastSyncAt?: string;
-  errorMessage?: string;
-  config?: Record<string, any>;
-}
-
-// --------------------------------------------------------------------------
-// Audit Logging
-// --------------------------------------------------------------------------
-
-export interface AuditLogEntry {
-  id: string;
-  portfolioId: string;
-  actorEmail: string;
-  action: string;
-  entityType: 'project' | 'media' | 'invoice' | 'proofing' | 'brand' | 'auth' | 'integration';
-  entityId?: string;
-  details: string;
-  ipAddress?: string;
-  timestamp: string;
-}
-
-// --------------------------------------------------------------------------
-// Feature Flags
-// --------------------------------------------------------------------------
-
-export interface FeatureFlags {
-  enableCloudStorage: boolean;
-  enablePayments: boolean;
-  enableInvoices: boolean;
-  enableContracts: boolean;
-  enableAiTools: boolean;
-  enableProofing: boolean;
-  enableAnalytics: boolean;
-  enableI18n: boolean;
-  enableWordPress: boolean;
-  enableCustomDomains: boolean;
-}
-
-// --------------------------------------------------------------------------
-// Internationalization & Localization
-// --------------------------------------------------------------------------
-
-export type SupportedLocale = 'en' | 'fr' | 'es' | 'de';
-
-export interface LocalizationConfig {
-  defaultLocale: SupportedLocale;
-  supportedLocales: SupportedLocale[];
-  currency: SupportedCurrency;
-  dateFormat: 'YYYY-MM-DD' | 'MM/DD/YYYY' | 'DD/MM/YYYY';
-  timezone: string;
+export interface AdminData extends PortfolioData {
+  inquiries: Inquiry[];
+  media: MediaAsset[];
+  driveConfig: GoogleDriveConnectionConfig;
+  streamingConfig: StreamingProviderConfig;
+  analytics: AdminAnalytics;
 }

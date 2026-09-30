@@ -1,0 +1,23 @@
+# Robots.txt for Eko Pixels Video Editor Portfolio & Archive
+User-agent: *
+Allow: /
+Allow: /#work
+Allow: /#services
+Allow: /#pricing
+Allow: /#about
+Allow: /#testimonials
+Allow: /#faq
+Allow: /#studio-location
+Allow: /#booking
+Allow: /#contact
+Allow: /privacy
+Allow: /thank-you
+
+# Disallow Private Admin Workstation and System API endpoints
+Disallow: /admin
+Disallow: /api/admin/
+Disallow: /api/wordpress/
+Disallow: /api/drive/
+
+# Sitemap declaration
+Sitemap: https://ekopixels.com/sitemap.xml

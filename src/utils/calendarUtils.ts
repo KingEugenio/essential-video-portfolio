@@ -1,13 +1,14 @@
 /**
- * Google Calendar integration for the booking / enquiry flow.
- * Client-side handoff (no OAuth): a pre-filled Google Calendar event link and a
- * downloadable .ics. Auto-sync to the studio's own calendar needs OAuth + the
- * backend (a later step).
+ * Google Calendar integration for DIRECTOR MODE bookings.
+ *
+ * Client-side handoff (no OAuth): builds a pre-filled Google Calendar event
+ * link plus a downloadable .ics. Auto-sync into the studio's own calendar
+ * needs OAuth + backend (a later step).
  */
 
 export interface CalendarBooking {
   title: string;
-  date?: string; // YYYY-MM-DD; defaults to a near tentative date
+  date: string; // YYYY-MM-DD (may be empty)
   details: string;
   location?: string;
   studioName?: string;
@@ -18,9 +19,7 @@ export interface CalendarBooking {
 
 function safeDay(date?: string): string {
   if (date && /^\d{4}-\d{2}-\d{2}$/.test(date)) return date.replace(/-/g, '');
-  const d = new Date();
-  d.setDate(d.getDate() + 2);
-  return d.toISOString().split('T')[0].replace(/-/g, '');
+  return new Date().toISOString().split('T')[0].replace(/-/g, '');
 }
 
 export function generateGoogleCalendarUrl(b: CalendarBooking): string {
@@ -28,9 +27,9 @@ export function generateGoogleCalendarUrl(b: CalendarBooking): string {
   const params = new URLSearchParams({
     action: 'TEMPLATE',
     text: b.title,
-    dates: `${day}T100000/${day}T110000`,
+    dates: `${day}T090000/${day}T120000`,
     details: b.details,
-    location: b.location || 'Remote / Online',
+    location: b.location || 'Remote / Studio Edit Bay',
   });
   if (b.studioEmail) params.append('add', b.studioEmail);
   return `https://calendar.google.com/calendar/render?${params.toString()}`;
@@ -38,23 +37,23 @@ export function generateGoogleCalendarUrl(b: CalendarBooking): string {
 
 export function generateICS(b: CalendarBooking): string {
   const day = safeDay(b.date);
-  const uid = `${Date.now()}@essential-portfolio`;
+  const uid = `${Date.now()}@director-mode`;
   const stamp = new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
   const esc = (s: string) => s.replace(/\\/g, '\\\\').replace(/,/g, '\\,').replace(/;/g, '\\;').replace(/\n/g, '\\n');
   return [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
-    'PRODID:-//Essential Portfolio//Booking//EN',
+    'PRODID:-//DIRECTOR MODE//Booking//EN',
     'CALSCALE:GREGORIAN',
     'METHOD:PUBLISH',
     'BEGIN:VEVENT',
     `UID:${uid}`,
     `DTSTAMP:${stamp}`,
-    `DTSTART:${day}T100000`,
-    `DTEND:${day}T110000`,
+    `DTSTART:${day}T090000`,
+    `DTEND:${day}T120000`,
     `SUMMARY:${esc(b.title)}`,
     `DESCRIPTION:${esc(b.details)}`,
-    `LOCATION:${esc(b.location || 'Remote / Online')}`,
+    `LOCATION:${esc(b.location || 'Remote / Studio Edit Bay')}`,
     b.studioEmail ? `ORGANIZER;CN=${esc(b.studioName || 'Studio')}:mailto:${b.studioEmail}` : '',
     b.clientEmail ? `ATTENDEE;CN=${esc(b.clientName || 'Client')}:mailto:${b.clientEmail}` : '',
     'STATUS:TENTATIVE',

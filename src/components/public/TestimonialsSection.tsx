@@ -1,74 +1,77 @@
 import React from 'react';
-import { Star, Quote, MessageSquare } from 'lucide-react';
-import { usePortfolio } from '../../context/PortfolioContext';
-import { GlassCard } from '../common/GlassCard';
+import { Quote, Star, MessageSquare } from 'lucide-react';
+import { Testimonial } from '../../types';
 
-export const TestimonialsSection: React.FC = () => {
-  const { testimonials } = usePortfolio();
-  const publishedTestimonials = testimonials.filter(t => t.published);
+interface TestimonialsSectionProps {
+  testimonials: Testimonial[];
+}
 
+export const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({ testimonials }) => {
   return (
-    <section id="testimonials-section" className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-[var(--brand-border)]">
+    <section id="testimonials" aria-labelledby="testimonials-heading" className="py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-white/10">
       <header className="text-center max-w-2xl mx-auto mb-12">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glass-surface text-xs font-bold text-[var(--brand-primary)] uppercase tracking-wider mb-3">
-          Endorsements
+        <div className="flex items-center justify-center gap-2 font-mono text-xs text-[#00e5ff] tracking-widest uppercase mb-2">
+          <MessageSquare className="w-3.5 h-3.5" aria-hidden="true" />
+          <span>CLIENT TRANSMISSIONS &amp; ENDORSEMENTS</span>
         </div>
-        <h2 className="text-3xl sm:text-5xl font-extrabold font-heading text-[var(--brand-text)] tracking-tight">
-          CLIENT REVIEWS
+        <h2 id="testimonials-heading" className="font-heading font-extrabold text-3xl sm:text-4xl text-white tracking-tight">
+          TRUSTED BY DIRECTORS &amp; LABELS
         </h2>
-        <p className="text-sm sm:text-base text-[var(--brand-text-secondary)] mt-3">
-          Feedback from commercial directors, agency producers, and recording artists.
-        </p>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {publishedTestimonials.map(item => (
-          <figure
-            key={item.id}
-            className="glass-card hover-glow rounded-2xl p-6 sm:p-7 flex flex-col justify-between gap-6 m-0 transition-all duration-300"
+        {testimonials.map((test) => (
+          <article
+            key={test.id}
+            id={`testimonial-${test.id}`}
+            className="bg-[#121214] border border-white/10 hover:border-white/30 p-6 rounded-lg transition-all flex flex-col justify-between"
           >
-            <div className="space-y-4">
-              {/* Stars & Quote Icon */}
-              <header className="flex items-center justify-between">
-                <div className="flex items-center gap-1" aria-label={`Rating: ${item.rating} out of 5 stars`}>
-                  {Array.from({ length: item.rating }).map((_, i) => (
-                    <Star
-                      key={i}
-                      className="w-4 h-4 fill-[var(--brand-primary)] text-[var(--brand-primary)]"
-                    />
-                  ))}
-                </div>
-                <Quote className="w-6 h-6 text-[var(--brand-primary)]/40" />
-              </header>
+            <div>
+              {/* Star Rating */}
+              <div className="flex items-center gap-1 text-amber-400 mb-4" aria-label={`Rating: ${test.rating || 5} out of 5 stars`}>
+                {Array.from({ length: test.rating || 5 }).map((_, i) => (
+                  <Star key={i} className="w-3.5 h-3.5 fill-current" aria-hidden="true" />
+                ))}
+              </div>
 
-              {/* Quote Content */}
-              <blockquote className="text-sm text-[var(--brand-text)] leading-relaxed italic m-0 p-0">
-                "{item.quote || item.content}"
+              {/* Quote Content as Blockquote */}
+              <blockquote className="m-0 p-0">
+                <p className="font-body text-sm text-white/80 leading-relaxed italic mb-6">
+                  &ldquo;{test.content}&rdquo;
+                </p>
               </blockquote>
             </div>
 
-            {/* Author details */}
-            <figcaption className="pt-4 border-t border-[var(--brand-border)] flex items-center gap-3">
-              <img
-                src={item.avatarUrl}
-                alt={item.clientName}
-                className="w-10 h-10 rounded-full object-cover border border-[var(--brand-border)]"
-              />
-              <div>
-                <cite className="text-sm font-bold text-[var(--brand-text)] not-italic block">
-                  {item.clientName}
-                </cite>
-                <p className="text-xs text-[var(--brand-text-muted)] m-0">
-                  {item.role}, {item.company}
-                </p>
-                {item.projectTitle && (
-                  <span className="text-[10px] text-[var(--brand-primary)] font-mono block mt-0.5">
-                    Re: {item.projectTitle}
+            {/* Client Info Footer with Cite */}
+            <footer className="pt-4 border-t border-white/10 flex items-center gap-3">
+              {test.avatarUrl ? (
+                <img
+                  src={test.avatarUrl}
+                  alt={`${test.clientName}, ${test.clientRole || 'Creative Director'} at ${test.company || 'Studio'}`}
+                  className="w-10 h-10 rounded-full object-cover border border-white/20"
+                  referrerPolicy="no-referrer"
+                  loading="lazy"
+                />
+              ) : (
+                <div className="w-10 h-10 rounded-full bg-[#1e1e24] text-[#ff3b00] flex items-center justify-center font-mono font-bold text-xs border border-white/10" aria-hidden="true">
+                  {test.clientName.substring(0, 2).toUpperCase()}
+                </div>
+              )}
+              <cite className="not-italic">
+                <span className="font-heading font-bold text-sm text-white block">
+                  {test.clientName}
+                </span>
+                <span className="font-mono text-[11px] text-white/50 block">
+                  {test.role} • <span className="text-[#00e5ff]">{test.company}</span>
+                </span>
+                {test.projectName && (
+                  <span className="font-mono text-[10px] text-white/30 truncate block mt-0.5">
+                    Ref: {test.projectName}
                   </span>
                 )}
-              </div>
-            </figcaption>
-          </figure>
+              </cite>
+            </footer>
+          </article>
         ))}
       </div>
     </section>

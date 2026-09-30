@@ -1,83 +1,66 @@
-/**
- * Content Portability & Export Service
- * 
- * Generates portable standard JSON snapshots of the entire portfolio ecosystem
- * (creator profile, projects, media metadata, services, testimonials,
- * proofing sessions, and theme tokens) enabling easy migration between
- * Local Storage, WordPress, Headless CMS, or Static Jamstack hosts.
- */
+import { AdminData } from '../types';
+import { safeJsonStringify } from '../utils/serialization';
 
-import {
-  Project,
-  BrandSettings,
-  ServiceItem,
-  PricingPackage,
-  TestimonialItem,
-  EnquiryItem,
-  ClientProofingReview,
-  MediaItem,
-  BookingFormSettings,
-  WordPressConfig,
-  ThemeSettings,
-} from '../types';
-
-export interface PortfolioExportData {
+export interface PortfolioExportPackage {
   version: string;
   exportedAt: string;
-  schema: string;
-  creator: BrandSettings;
-  projects: Project[];
-  services: ServiceItem[];
-  pricingPackages?: PricingPackage[];
-  testimonials: TestimonialItem[];
-  proofingReviews: ClientProofingReview[];
-  mediaLibrary: MediaItem[];
-  bookingSettings: BookingFormSettings;
-  wordPressConfig: WordPressConfig;
-  themeSettings?: ThemeSettings;
+  schema: 'ekopixels-portfolio-v2';
+  cmsSource: 'standalone' | 'wordpress' | 'custom-api';
+  data: AdminData;
 }
 
 export class ExportService {
   /**
-   * Generates a downloadable JSON file of the complete portfolio data
+   * Generates a portable JSON export bundle
    */
-  public static exportPortfolio(data: Omit<PortfolioExportData, 'version' | 'exportedAt' | 'schema'>): void {
-    const payload: PortfolioExportData = {
-      version: '2.0.0',
+  public static generateExportBundle(data: AdminData, cmsSource: 'standalone' | 'wordpress' | 'custom-api' = 'standalone'): PortfolioExportPackage {
+    return {
+      version: '2.4.0',
       exportedAt: new Date().toISOString(),
-      schema: 'https://schema.ekopixels.com/portfolio-v2.json',
-      ...data,
+      schema: 'ekopixels-portfolio-v2',
+      cmsSource,
+      data,
     };
-
-    const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(payload, null, 2))}`;
-    const downloadAnchor = document.createElement('a');
-    downloadAnchor.setAttribute('href', jsonString);
-    downloadAnchor.setAttribute('download', `portfolio-export-${new Date().toISOString().split('T')[0]}.json`);
-    document.body.appendChild(downloadAnchor);
-    downloadAnchor.click();
-    downloadAnchor.remove();
   }
 
   /**
-   * Parses and validates an uploaded portfolio-export.json file
+   * Triggers a browser download of the export package
    */
-  public static async parseImportFile(file: File): Promise<PortfolioExportData> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        try {
-          const content = event.target?.result as string;
-          const parsed = JSON.parse(content) as PortfolioExportData;
-          if (!parsed.projects || !Array.isArray(parsed.projects)) {
-            throw new Error('Invalid portfolio backup file: missing projects array.');
-          }
-          resolve(parsed);
-        } catch (err: any) {
-          reject(new Error(`Failed to parse import file: ${err.message}`));
-        }
-      };
-      reader.onerror = () => reject(new Error('Failed to read backup file.'));
-      reader.readAsText(file);
-    });
+  public static downloadExportJSON(data: AdminData): void {
+    if (typeof window === 'undefined') return;
+
+    const bundle = this.generateExportBundle(data);
+    const jsonString = safeJsonStringify(bundle, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `portfolio-export-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
+
+  /**
+   * Validates an imported JSON package
+   */
+  public static validateImportBundle(jsonString: string): { valid: boolean; data?: AdminData; error?: string } {
+    try {
+      const parsed = JSON.parse(jsonString);
+      if (!parsed || typeof parsed !== 'object') {
+        return { valid: false, error: 'Invalid JSON format.' };
+      }
+
+      const data = parsed.data || parsed;
+      if (!data.brand || !Array.isArray(data.projects)) {
+        return { valid: false, error: 'Missing required portfolio schema elements (brand, projects).' };
+      }
+
+      return { valid: true, data };
+    } catch (e: any) {
+      return { valid: false, error: `JSON Parse error: ${e.message}` };
+    }
   }
 }

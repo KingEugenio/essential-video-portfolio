@@ -1,254 +1,249 @@
 @import "tailwindcss";
 
-:root {
-  --brand-primary: #A3E635;
-  --brand-primary-rgb: 163, 230, 53;
-  --brand-secondary: #84CC16;
-  --brand-accent: #BEF264;
-  --brand-bg: #050505;
-  --brand-surface: #111111;
-  --brand-surface-elevated: #181818;
-  --brand-text: #FFFFFF;
-  --brand-text-secondary: #A7A7A7;
-  --brand-text-muted: #666666;
-  --brand-border: #2A2A2A;
-  --brand-button: #A3E635;
-  --brand-button-text: #050505;
-  
-  --glass-blur: 20px;
-  --glass-opacity: 0.75;
-  --glass-border-opacity: 0.25;
-  --card-radius: 12px;
-  --button-radius: 8px;
-  --border-thickness: 2px;
-  --brutalist-shadow: 4px 4px 0px var(--brand-border);
-  --brutalist-accent-shadow: 4px 4px 0px var(--brand-primary);
-
-  --font-heading: 'Plus Jakarta Sans', sans-serif;
-  --font-body: 'Inter', sans-serif;
-  --font-nav: 'Plus Jakarta Sans', sans-serif;
-  --font-button: 'Plus Jakarta Sans', sans-serif;
-  --heading-weight: 900;
+/* BD Gravel / Gravel Display Typeface Definition */
+@font-face {
+  font-family: 'BD Gravel';
+  src: local('BD Gravel'), local('BDGravel'), local('Gravel'), local('BD-Gravel');
+  font-weight: 700 900;
+  font-style: normal;
+  font-display: swap;
 }
 
-body {
-  background-color: var(--brand-bg);
-  color: var(--brand-text);
-  font-family: var(--font-body);
-  transition: background-color 0.25s ease, color 0.25s ease;
-  overflow-x: hidden;
+@font-face {
+  font-family: 'Gravel';
+  src: local('Gravel'), local('BD Gravel'), local('BDGravel');
+  font-weight: 700 900;
+  font-style: normal;
+  font-display: swap;
 }
 
-h1, h2, h3, h4, h5, h6, .font-heading {
-  font-family: var(--font-heading);
-  font-weight: var(--heading-weight, 800);
+@layer base {
+  :root {
+    --brand-primary: #ff3b00;
+    --brand-secondary: #00e5ff;
+    --brand-accent: #ffe600;
+    --brand-bg: #080808;
+    --brand-surface: #121214;
+    --brand-surface-elevated: #1a1a1e;
+    --brand-text: #f4f4f5;
+    --brand-muted-text: #8e8e93;
+    --brand-border: #26262b;
+    --brand-crt-glow: rgba(255, 59, 0, 0.25);
+    --brand-film-tint: rgba(255, 140, 0, 0.03);
+    --font-heading: 'BD Gravel', 'Unbounded', 'Syne', 'Space Grotesk', sans-serif;
+    --font-display: 'BD Gravel', 'Unbounded', 'Syne', 'Space Grotesk', sans-serif;
+    --font-body: 'Plus Jakarta Sans', 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', 'IBM Plex Mono', monospace;
+  }
 }
 
-.font-nav {
-  font-family: var(--font-nav);
+/* Custom Utilities and CRT / Retro Effects */
+.font-heading,
+.font-display {
+  font-family: var(--font-heading), var(--font-display), 'BD Gravel', 'Unbounded', 'Syne', 'Space Grotesk', sans-serif;
 }
 
-.font-button {
-  font-family: var(--font-button);
+.font-body {
+  font-family: var(--font-body), 'Plus Jakarta Sans', 'Inter', sans-serif;
 }
 
-/* Neo-Brutalist + Glassmorphism Classes */
-.brutalist-border {
-  border-width: var(--border-thickness);
-  border-color: var(--brand-border);
-  border-style: solid;
+.font-mono {
+  font-family: var(--font-mono), 'JetBrains Mono', 'IBM Plex Mono', monospace;
 }
 
-.brutalist-card {
-  background-color: color-mix(in srgb, var(--brand-surface) calc(var(--glass-opacity) * 100%), transparent);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
-  border: var(--border-thickness) solid var(--brand-border);
-  border-radius: var(--card-radius);
-  box-shadow: var(--brutalist-shadow);
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
+/* Scanlines overlay */
+.scanlines {
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.35) 50%
+  ), linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.03),
+    rgba(0, 255, 0, 0.01),
+    rgba(0, 0, 255, 0.03)
+  );
+  background-size: 100% 3px, 6px 100%;
+  pointer-events: none;
 }
 
-.brutalist-card:hover {
-  border-color: color-mix(in srgb, var(--brand-primary) 60%, var(--brand-border));
-  box-shadow: var(--brutalist-accent-shadow);
-  transform: translate(-2px, -2px);
+/* CRT Screen curve and glow */
+.crt-glow {
+  box-shadow: inset 0 0 40px var(--brand-crt-glow, rgba(255, 59, 0, 0.15)),
+              0 0 25px var(--brand-crt-glow, rgba(255, 59, 0, 0.12));
 }
 
-.brutalist-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-button);
-  font-weight: 700;
-  border-radius: var(--button-radius);
-  border: var(--border-thickness) solid var(--brand-button);
-  background-color: var(--brand-button);
-  color: var(--brand-button-text);
-  box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.9);
-  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+.crt-text-glow {
+  text-shadow: 0 0 8px currentColor, 0 0 16px currentColor;
 }
 
-.brutalist-button:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 5px 5px 0px rgba(0, 0, 0, 0.9);
+/* Glitch animation */
+@keyframes glitch-anim {
+  0% {
+    clip-path: inset(40% 0 61% 0);
+    transform: skew(0.3deg);
+  }
+  20% {
+    clip-path: inset(92% 0 1% 0);
+    transform: skew(-0.8deg);
+  }
+  40% {
+    clip-path: inset(10% 0 85% 0);
+    transform: skew(0.5deg);
+  }
+  60% {
+    clip-path: inset(58% 0 43% 0);
+    transform: skew(-0.3deg);
+  }
+  80% {
+    clip-path: inset(25% 0 58% 0);
+    transform: skew(0.8deg);
+  }
+  100% {
+    clip-path: inset(40% 0 61% 0);
+    transform: skew(0.3deg);
+  }
 }
 
-.brutalist-button:active {
-  transform: translate(1px, 1px);
-  box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.9);
+.animate-glitch {
+  animation: glitch-anim 2.5s infinite linear alternate-reverse;
 }
 
-.brutalist-badge {
-  font-family: var(--font-heading);
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 0.6875rem;
-  padding: 0.25rem 0.625rem;
-  border-radius: calc(var(--button-radius) * 0.75);
-  border: 1px solid var(--brand-border);
-  background-color: color-mix(in srgb, var(--brand-surface-elevated) 80%, transparent);
-  color: var(--brand-text);
+/* REC blink */
+@keyframes rec-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.2; }
 }
 
-.glass-surface {
-  background-color: color-mix(in srgb, var(--brand-surface) calc(var(--glass-opacity) * 100%), transparent);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
-  border: 1px solid color-mix(in srgb, var(--brand-border) calc(var(--glass-border-opacity) * 100% * 3), transparent);
+.animate-rec-blink {
+  animation: rec-blink 1.2s infinite ease-in-out;
 }
 
-.glass-nav {
-  background-color: color-mix(in srgb, var(--brand-bg) 80%, transparent);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
-  border: var(--border-thickness) solid var(--brand-border);
-  box-shadow: 0 10px 35px -10px rgba(0, 0, 0, 0.8);
-}
-
-.glass-card {
-  background-color: color-mix(in srgb, var(--brand-surface) calc(var(--glass-opacity) * 100%), transparent);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
-  border: var(--border-thickness) solid color-mix(in srgb, var(--brand-border) 80%, transparent);
-  border-radius: var(--card-radius);
-  box-shadow: var(--brutalist-shadow);
-}
-
-.glass-pill {
-  background-color: color-mix(in srgb, var(--brand-surface-elevated) 85%, transparent);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid color-mix(in srgb, var(--brand-border) 70%, transparent);
-  border-radius: 9999px;
-}
-
-.floating-play-btn {
-  background-color: color-mix(in srgb, var(--brand-surface) 70%, transparent);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1.5px solid color-mix(in srgb, #ffffff 30%, transparent);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.1);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.floating-play-btn:hover {
-  background-color: var(--brand-primary);
-  color: var(--brand-button-text);
-  border-color: var(--brand-primary);
-  transform: scale(1.1);
-  box-shadow: 0 0 25px rgba(var(--brand-primary-rgb), 0.6), 0 10px 30px rgba(0, 0, 0, 0.8);
-}
-
-/* Custom Scrollbars */
+/* Custom scrollbars */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--brand-bg);
+  background: #0d0d0f;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--brand-surface-elevated);
-  border-radius: 4px;
+  background: #2a2a30;
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--brand-secondary);
+  background: #ff3b00;
 }
 
-/* Custom slider input */
-input[type=range]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  height: 16px;
-  width: 16px;
-  border-radius: 50%;
-  background: var(--brand-primary);
-  cursor: pointer;
-  box-shadow: 0 0 10px rgba(var(--brand-primary-rgb), 0.5);
-}
-
-/* ==========================================================================
-   PAGE-AWARE SKELETON LOADING SYSTEM STYLES
-   ========================================================================== */
-
-@keyframes skeleton-shimmer {
+/* Skeleton Loading Shimmer Keyframes - High Visibility & Cinematic Palette */
+@keyframes shimmer-sweep {
   0% {
-    transform: translateX(-100%);
+    background-position: -200% 0;
   }
   100% {
-    transform: translateX(100%);
+    background-position: 200% 0;
   }
 }
 
-@keyframes skeleton-pulse {
+@keyframes skeleton-hud-pulse {
   0%, 100% {
     opacity: 0.85;
+    transform: scale(1);
   }
   50% {
-    opacity: 0.4;
+    opacity: 1;
+    transform: scale(1.02);
   }
 }
 
-.skeleton-shimmer-effect {
-  position: relative;
-  overflow: hidden;
-  background-color: color-mix(in srgb, var(--brand-surface-elevated) 85%, transparent);
+@keyframes skeleton-vu-bounce {
+  0%, 100% {
+    height: 30%;
+  }
+  50% {
+    height: 90%;
+  }
 }
 
-.skeleton-shimmer-effect::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  transform: translateX(-100%);
-  background-image: linear-gradient(
+.skeleton-shimmer {
+  background: linear-gradient(
     90deg,
-    rgba(255, 255, 255, 0) 0,
-    rgba(255, 255, 255, 0.05) 20%,
-    rgba(255, 255, 255, 0.12) 60%,
-    rgba(255, 255, 255, 0)
+    rgba(255, 255, 255, 0.02) 0%,
+    rgba(255, 255, 255, 0.07) 20%,
+    rgba(255, 59, 0, 0.18) 45%,
+    rgba(0, 229, 255, 0.22) 55%,
+    rgba(255, 255, 255, 0.12) 75%,
+    rgba(255, 255, 255, 0.02) 100%
   );
-  animation: skeleton-shimmer 2s infinite cubic-bezier(0.4, 0, 0.2, 1);
+  background-size: 200% 100%;
+  animation: shimmer-sweep 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
-.skeleton-pulse-effect {
-  background-color: color-mix(in srgb, var(--brand-surface-elevated) 75%, transparent);
-  animation: skeleton-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+.skeleton-shimmer-subtle {
+  background: linear-gradient(
+    90deg,
+    rgba(24, 24, 30, 0.95) 0%,
+    rgba(38, 38, 48, 0.98) 25%,
+    rgba(52, 52, 66, 1) 50%,
+    rgba(38, 38, 48, 0.98) 75%,
+    rgba(24, 24, 30, 0.95) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer-sweep 1.8s ease-in-out infinite;
+}
+
+.skeleton-shimmer-accent {
+  background: linear-gradient(
+    90deg,
+    rgba(34, 23, 20, 0.95) 0%,
+    rgba(55, 30, 25, 0.98) 25%,
+    rgba(85, 40, 30, 1) 50%,
+    rgba(55, 30, 25, 0.98) 75%,
+    rgba(34, 23, 20, 0.95) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer-sweep 1.8s ease-in-out infinite;
+}
+
+.skeleton-shimmer-cyan {
+  background: linear-gradient(
+    90deg,
+    rgba(18, 31, 36, 0.95) 0%,
+    rgba(24, 48, 56, 0.98) 25%,
+    rgba(30, 68, 80, 1) 50%,
+    rgba(24, 48, 56, 0.98) 75%,
+    rgba(18, 31, 36, 0.95) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer-sweep 1.8s ease-in-out infinite;
+}
+
+.skeleton-box-glow {
+  box-shadow: 0 0 20px rgba(255, 59, 0, 0.15), inset 0 0 15px rgba(0, 229, 255, 0.08);
+}
+
+.skeleton-box-glow-cyan {
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.15), inset 0 0 15px rgba(0, 229, 255, 0.08);
+}
+
+.skeleton-scanline {
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.15),
+    rgba(0, 0, 0, 0.15) 1px,
+    transparent 1px,
+    transparent 2px
+  );
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .skeleton-shimmer-effect::after {
+  .skeleton-shimmer,
+  .skeleton-shimmer-subtle,
+  .skeleton-shimmer-accent,
+  .skeleton-shimmer-cyan {
     animation: none;
-    display: none;
-  }
-  .skeleton-pulse-effect {
-    animation: none;
-    opacity: 0.6;
+    opacity: 0.7;
   }
 }

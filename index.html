@@ -1,33 +1,131 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
   <head>
+    <!-- Meta & Viewport Standards -->
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
-    <meta name="theme-color" content="#0a0a0a" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- Primary Metadata -->
+    <title>Video Editor Portfolio Platform</title>
+    <meta name="description" content="A cinematic portfolio platform and CMS for video editors, filmmakers, and motion designers featuring retro digital surrealism, Google Drive &amp; video source management, Brand Studio, and multi-format video players." />
+    <meta name="author" content="EKO Pixels" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#080808" />
     <meta name="color-scheme" content="dark light" />
-    <title>CineFolio | Video Editor Portfolio & CMS</title>
-    <meta name="description" content="Commercial Video Editor, Colorist & Director Portfolio Platform built on HTML5 web standards." />
-    <meta name="application-name" content="CineFolio" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="format-detection" content="telephone=no" />
-    <meta property="og:title" content="CineFolio | Video Editor Portfolio & CMS" />
-    <meta property="og:description" content="Commercial Video Editor, Colorist & Director Portfolio Platform built on HTML5 web standards." />
+
+    <!-- Open Graph / Social Sharing Protocol -->
     <meta property="og:type" content="website" />
+    <meta property="og:title" content="Video Editor Portfolio Platform" />
+    <meta property="og:description" content="A cinematic portfolio platform and CMS for video editors, filmmakers, and motion designers featuring retro digital surrealism, Google Drive &amp; video source management, Brand Studio, and multi-format video players." />
+    <meta property="og:site_name" content="Video Editor Portfolio Platform" />
+
+    <!-- Twitter Cards -->
     <meta name="twitter:card" content="summary_large_image" />
-    <!-- Google Fonts Preconnect & Stylesheets -->
+    <meta name="twitter:title" content="Video Editor Portfolio Platform" />
+    <meta name="twitter:description" content="A cinematic portfolio platform and CMS for video editors, filmmakers, and motion designers featuring retro digital surrealism, Google Drive &amp; video source management, Brand Studio, and multi-format video players." />
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://ekopixels.com/" />
+
+    <!-- Schema.org JSON-LD Structured Data: ProfessionalService -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ProfessionalService",
+      "name": "EKO Pixels",
+      "image": "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=1200&auto=format&fit=crop&q=80",
+      "url": "https://ekopixels.com",
+      "telephone": "+447700900077",
+      "priceRange": "$$$",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "450 Production Row, Edit Suite 4B",
+        "addressLocality": "London",
+        "postalCode": "W1D 3QU",
+        "addressCountry": "GB"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 51.5138,
+        "longitude": -0.1337
+      },
+      "openingHoursSpecification": [
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+          "opens": "09:00",
+          "closes": "20:00"
+        }
+      ],
+      "sameAs": [
+        "https://vimeo.com",
+        "https://youtube.com",
+        "https://instagram.com"
+      ]
+    }
+    </script>
+
+    <!-- Schema.org JSON-LD Structured Data: FAQPage -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How do we upload and transfer multi-terabyte raw project footage?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "We provide dedicated high-speed cloud partitions via Google Drive, Frame.io, Dropbox Transfer, or Aspera. For extensive multi-camera shoots (500GB–8TB+), clients can ship encrypted physical NVMe/RAID hard drives directly to our editing studio suite for same-day local ingestion and verification."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Which raw camera formats, codecs, and color spaces do you support?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "We support all major professional digital cinema and broadcast pipelines including RED (R3D), ARRI (ARRIRAW/ProRes 4444 XQ), Sony (XAVC / RAW / S-Log3), Canon Cinema RAW Light (CRM / C-Log), Blackmagic (BRAW), Apple ProRes RAW, and 10-bit LOG mirrorless captures. We grade in ACES 1.3 or DaVinci YRGB Color Managed color science."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is your standard turnaround time for a first cut?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Standard commercial short-form edits (0:15 / 0:30 / 0:60 / 9:16 reels) deliver an initial assembly / offline rough cut within 48 to 72 business hours. Music videos, documentaries, and long-form brand films typically deliver in 5 to 7 business days. Rush priority delivery (24-hour turnaround) is available upon request."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Do you execute Non-Disclosure Agreements (NDAs) for unreleased campaigns?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. We sign mutual or client-drafted NDAs before accepting any project drive, script, or footage link. Unreleased creative campaigns, product launches, and narrative projects remain strictly air-gapped on encrypted local RAID storage until their official public broadcast."
+          }
+        }
+      ]
+    }
+    </script>
+
+    <!-- Google Web Fonts Preconnect -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=Inter:wght@300;400;500;600;700;800&family=Manrope:wght@300;400;500;600;700;800&family=Montserrat:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@700;800&family=Unbounded:wght@600;700;800;900&display=swap" rel="stylesheet">
   </head>
-  <body class="bg-neutral-950 text-neutral-100 antialiased selection:bg-neutral-800 selection:text-white">
+  <body class="bg-[#080808] text-[#f0f0f0] antialiased selection:bg-[#ff3b00] selection:text-white overflow-x-hidden min-h-screen">
+    <!-- Noscript Accessibility Fallback -->
     <noscript>
-      <div style="padding: 2rem; text-align: center; font-family: sans-serif; background: #111; color: #fff;">
-        <h1>HTML5 Video Editor Portfolio</h1>
-        <p>This web application uses modern HTML5 web standards, JavaScript, and HTML5 video playback APIs. Please enable JavaScript to access the full interactive features.</p>
+      <div style="padding: 2rem; background: #121214; color: #fff; text-align: center; font-family: sans-serif;">
+        <h1>EKO Pixels — Video Editor Portfolio</h1>
+        <p>Please enable JavaScript to view this cinematic video production and color grading portfolio.</p>
       </div>
     </noscript>
+
+    <!-- Application Root Container -->
     <div id="root"></div>
+
+    <!-- Application Entry Script -->
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
